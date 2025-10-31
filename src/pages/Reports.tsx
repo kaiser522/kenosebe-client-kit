@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Report } from '@/types';
 
 export default function Reports() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
 
   // Mock data
@@ -53,9 +53,16 @@ export default function Reports() {
     },
   ];
 
-  const filteredReports = reports.filter(report =>
-    report.winner.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredReports = reports.filter(report => {
+    // Filter by organization for regular users
+    const userOrgId = typeof user?.organization === 'number' ? user.organization : user?.organization?.id;
+    const reportOrgId = typeof report.organization === 'number' ? report.organization : report.organization.id;
+    
+    const matchesOrg = isAdmin || userOrgId === reportOrgId;
+    const matchesSearch = report.winner.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    return matchesOrg && matchesSearch;
+  });
 
   return (
     <div className="space-y-6 animate-fade-in">
