@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types';
+import { authAPI, fetchCSRFToken } from '@/lib/api';
 
 interface AuthContextType {
   user: User | null;
@@ -16,40 +17,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // In real implementation, check session with /api/me/
-    // For demo, use mock data
-    const mockUser: User = {
-      id: 1,
-      username: 'demo',
-      first_name: 'Demo',
-      last_name: 'User',
-      email: 'demo@kenosabe.com',
-      role: 'ADMIN',
-      organization: 1,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+    const initAuth = async () => {
+      try {
+        // Fetch CSRF token first
+        await fetchCSRFToken();
+        
+        // Check if user is already authenticated
+        const currentUser = await authAPI.getCurrentUser();
+        setUser(currentUser);
+      } catch (error) {
+        // User not authenticated
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    setUser(mockUser);
-    setIsLoading(false);
+
+    initAuth();
   }, []);
 
   const login = async (username: string, password: string) => {
-    // Mock login
-    const mockUser: User = {
-      id: 1,
-      username,
-      first_name: 'Demo',
-      last_name: 'User',
-      email: 'demo@kenosabe.com',
-      role: 'ADMIN',
-      organization: 1,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    setUser(mockUser);
+    const user = await authAPI.login(username, password);
+    setUser(user);
   };
 
   const logout = async () => {
+    await authAPI.logout();
     setUser(null);
   };
 
