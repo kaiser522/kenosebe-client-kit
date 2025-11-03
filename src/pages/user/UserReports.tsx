@@ -3,11 +3,11 @@ import { Search, Filter, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAppSelector } from '@/store/hooks';
 import { Report } from '@/types';
 
 export default function UserReports() {
-  const { user } = useAuth();
+  const { user } = useAppSelector((state) => state.auth);
   const [searchTerm, setSearchTerm] = useState('');
 
   // Mock data - includes reports from multiple organizations

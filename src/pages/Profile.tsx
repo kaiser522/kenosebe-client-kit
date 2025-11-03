@@ -1,10 +1,10 @@
 import { UserCircle, Mail, Building2, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAppSelector } from '@/store/hooks';
 import { Badge } from '@/components/ui/badge';
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { user } = useAppSelector((state) => state.auth);
 
   if (!user) return null;
 

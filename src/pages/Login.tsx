@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAppDispatch } from '@/store/hooks';
+import { login as loginAction } from '@/store/authSlice';
 import { useToast } from '@/hooks/use-toast';
 import logo from '@/assets/logo.png';
 
@@ -13,7 +14,7 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -22,7 +23,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      await login(username, password);
+      await dispatch(loginAction({ username, password })).unwrap();
       toast({
         title: 'Welcome back!',
         description: 'You have successfully logged in.',

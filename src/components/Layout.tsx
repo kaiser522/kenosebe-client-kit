@@ -9,13 +9,20 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { logout as logoutAction } from '@/store/authSlice';
 import { Button } from '@/components/ui/button';
 import logo from '@/assets/logo.png';
 import { useState } from 'react';
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const { user, logout, isAdmin } = useAuth();
+  const { user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const isAdmin = user?.role === 'ADMIN';
+  
+  const handleLogout = () => {
+    dispatch(logoutAction());
+  };
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -73,7 +80,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   <UserCircle className="h-5 w-5" />
                 </Button>
               </Link>
-              <Button onClick={logout} variant="outline" size="icon">
+              <Button onClick={handleLogout} variant="outline" size="icon">
                 <LogOut className="h-5 w-5" />
               </Button>
             </div>
@@ -124,7 +131,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </Link>
                 <button
                   onClick={() => {
-                    logout();
+                    handleLogout();
                     setMobileMenuOpen(false);
                   }}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
